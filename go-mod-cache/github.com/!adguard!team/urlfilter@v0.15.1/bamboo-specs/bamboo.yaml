@@ -1,0 +1,83 @@
+---
+'version': 2
+'plan':
+  'project-key': 'AGH'
+  'key': 'URLFLTSPECS'
+  'name': 'urlfilter - Build and run tests'
+'variables':
+  'dockerGo': 'golang:1.17.5'
+  'dockerLint': 'golangci/golangci-lint'
+
+'stages':
+  - 'Test':
+      'manual': 'false'
+      'final': 'false'
+      'jobs':
+        - 'Lint'
+        - 'Test'
+
+'Lint':
+  'docker':
+    'image': '${bamboo.dockerLint}'
+  'key': 'LINT'
+  'tasks':
+    - 'checkout':
+        'force-clean-build': 'false'
+    - 'script':
+        'interpreter': 'SHELL'
+        'scripts':
+          - |-
+            set -x
+            set -e
+
+            # Print versions
+            golangci-lint --version
+
+            # Run linter
+            golangci-lint run
+
+  'requirements':
+    - 'adg-docker': 'true'
+
+
+'Test':
+  'docker':
+    'image': '${bamboo.dockerGo}'
+    'volumes':
+      '${system.GO_CACHE_DIR}': '${bamboo.cacheGo}'
+      '${system.GO_PKG_CACHE_DIR}': '${bamboo.cacheGoPkg}'
+  'key': 'TEST'
+  'tasks':
+    - 'checkout':
+        'force-clean-build': 'false'
+    - 'script':
+        'interpreter': SHELL
+        'scripts':
+          - |-
+            set -x
+            set -e
+
+            # Print versions
+            go version
+
+            # Run tests
+            go test -race -v -bench="." -coverprofile="coverage.txt" -covermode=atomic ./...
+  'requirements':
+    - 'adg-docker': 'true'
+
+'branches':
+  'create': 'for-pull-request'
+  'delete':
+    'after-deleted-days': '7'
+    'after-inactive-days': '30'
+  'integration':
+    'push-on-success': 'false'
+    'merge-from': 'urlfilter - Build and run tests'
+  'link-to-jira': 'true'
+
+'notifications': [ ]
+
+'labels': [ ]
+
+'other':
+  'concurrent-build-plugin': 'system-default'

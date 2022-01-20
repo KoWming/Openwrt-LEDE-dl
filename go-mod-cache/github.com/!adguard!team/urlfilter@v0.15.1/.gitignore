@@ -1,0 +1,8 @@
+.DS_Store
+.vscode
+.idea
+testdata/requests.json
+testdata/requests2.json
+testdata/*.pprof
+testdata/*.db
+*~

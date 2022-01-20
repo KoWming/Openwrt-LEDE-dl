@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+MAKE=make
+
+# Use gmake (GNU make) in macOS
+if [[ -f "$(which gmake)" ]]; then
+    MAKE=gmake
+fi
+
+${MAKE} check

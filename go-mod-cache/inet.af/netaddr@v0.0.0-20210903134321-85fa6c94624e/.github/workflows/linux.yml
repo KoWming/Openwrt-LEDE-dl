@@ -1,0 +1,40 @@
+name: Linux
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # Oldest we support (1.12) and a latest couple:
+        go-version: [1.12, 1.16, 1.17]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go-version }}
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Check Go modules
+      if: matrix.go-version == '1.17'
+      run: |
+        go mod tidy
+        git diff --exit-code
+
+    - name: Check formatting
+      if: matrix.go-version == '1.17'
+      run: diff -u <(echo -n) <(gofmt -d .)
+
+    - name: Run tests on linux
+      run: go test ./...

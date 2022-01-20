@@ -1,0 +1,21 @@
+{
+    "extends": [
+        "config:base",
+        "schedule:weekly"
+    ],
+    "semanticCommits": false,
+    "postUpdateOptions": [
+        "gomodTidy"
+    ],
+    "commitMessagePrefix": "chore(all): ",
+    "commitMessageAction": "update",
+    "groupName": "all",
+    "ignoreDeps": [
+        "google.golang.org/genproto"
+    ],
+    "force": {
+        "constraints": {
+          "go": "1.16"
+        }
+      }
+}

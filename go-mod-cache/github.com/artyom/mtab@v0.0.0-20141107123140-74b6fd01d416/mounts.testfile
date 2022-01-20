@@ -1,0 +1,4 @@
+rootfs / rootfs rw 0 0
+sysfs /sys sysfs rw,nosuid,nodev,noexec 0 0
+proc /proc proc rw,nosuid,nodev,noexec 0 0
+/dev/sdb /path\040with\040spaces xfs rw 0 0

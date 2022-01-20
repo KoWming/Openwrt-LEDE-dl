@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'README.md'
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+name: tests
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version:
+          - '1.13'
+          - '1.14'
+          - '1.15'
+          - '1.16'
+        platform:
+          - 'ubuntu-latest'
+          - 'macos-latest'
+          - 'windows-latest'
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: 'Setup Environment'
+        shell: bash
+        run: |
+          git config --global core.autocrlf false
+      - name: 'Install Go'
+        uses: 'actions/setup-go@v2'
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: 'Checkout code'
+        uses: 'actions/checkout@v2'
+      - name: 'Lint'
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.40.1
+      - name: 'Test'
+        run: |
+          go test ./...
